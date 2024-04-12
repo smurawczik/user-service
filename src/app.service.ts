@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { PingResponse } from './app.types';
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!';
+  ping(now: number): PingResponse {
+    return { ping: `${Date.now() - now}ms` };
   }
 }
