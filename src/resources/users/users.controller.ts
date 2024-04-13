@@ -16,6 +16,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { GetUsersQuery } from './users.types';
 import { BooleanPipe } from 'src/pipes/boolean.pipe';
+import { isEmail, isUUID } from 'class-validator';
 
 @Controller('users')
 @UseInterceptors(CacheInterceptor)
@@ -33,12 +34,18 @@ export class UsersController {
     return this.usersService.findAll(usersQuery);
   }
 
-  @Get(':id')
+  @Get(':param')
   findOne(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('param') param: string,
     @Query(BooleanPipe) usersQuery: GetUsersQuery,
   ) {
-    return this.usersService.findOne(id, usersQuery);
+    if (isUUID(param)) {
+      return this.usersService.findUserById(param, usersQuery);
+    }
+    if (isEmail(param)) {
+      return this.usersService.findOneByEmail(param, usersQuery);
+    }
+    return null;
   }
 
   @Patch(':id')

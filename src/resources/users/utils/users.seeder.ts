@@ -9,7 +9,7 @@ export class UsersSeeder {
     user.firstName = faker.person.firstName();
     user.lastName = faker.person.lastName();
     user.email = faker.internet.email();
-    user.password = faker.internet.password();
+    user.password = '12345678';
     return user;
   }
 }

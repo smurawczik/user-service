@@ -6,7 +6,7 @@ export async function seedFakeData(app: INestApplication) {
   const userFactory = app.get(UsersSeeder);
   const userService = app.get(UsersService);
 
-  const numberOfUsers = 30;
+  const numberOfUsers = 10;
   for (let i = 0; i < numberOfUsers; i++) {
     const user = userFactory.create();
     await userService.create(user);

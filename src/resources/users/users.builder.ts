@@ -1,10 +1,10 @@
-import { User } from './entities/user.entity';
+import { BuildUserDto } from './dto/build-user.dto';
 
 export class UserBuilder {
-  private user: User;
+  private user: BuildUserDto;
 
   constructor() {
-    this.user = new User();
+    this.user = new BuildUserDto();
   }
 
   withFirstName(firstName: string): UserBuilder {
@@ -27,7 +27,12 @@ export class UserBuilder {
     return this;
   }
 
-  build(): User {
+  withPassword(password: string): UserBuilder {
+    this.user.password = password;
+    return this;
+  }
+
+  build(): BuildUserDto {
     return this.user;
   }
 }

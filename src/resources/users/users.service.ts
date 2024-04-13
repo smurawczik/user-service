@@ -57,12 +57,18 @@ export class UsersService {
   }
 
   async findAll(usersQuery?: GetUsersQuery) {
-    const limit = usersQuery?.limit || 30;
+    const limit = usersQuery?.limit || 20;
     const offset = usersQuery?.offset || 0;
 
     const dbUsers = await this.usersRepository.find({
       take: limit,
       skip: offset,
+      relations: ['password'],
+      select: {
+        password: {
+          password: true,
+        },
+      },
     });
 
     return dbUsers.map((user) => {
@@ -70,10 +76,32 @@ export class UsersService {
     });
   }
 
-  async findOne(id: string, usersQuery?: GetUsersQuery) {
+  async findUserById(id: string, usersQuery?: GetUsersQuery) {
     const dbUser = await this.usersRepository.findOne({
       where: {
         id,
+      },
+      relations: ['password'],
+      select: {
+        password: {
+          password: true,
+        },
+      },
+    });
+
+    return this.buildUser(dbUser, usersQuery);
+  }
+
+  async findOneByEmail(email: string, usersQuery?: GetUsersQuery) {
+    const dbUser = await this.usersRepository.findOne({
+      where: {
+        email,
+      },
+      relations: ['password'],
+      select: {
+        password: {
+          password: true,
+        },
       },
     });
 
@@ -99,7 +127,12 @@ export class UsersService {
     noop(_, __);
 
     if (isEmptyObject(filteredQuery)) {
-      return user;
+      return {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+      };
     }
 
     const userBuilder = new UserBuilder();
@@ -114,6 +147,9 @@ export class UsersService {
     }
     if (usersQuery?.id) {
       userBuilder.withId(user.id);
+    }
+    if (usersQuery?.password) {
+      userBuilder.withPassword(user.password.password);
     }
     return userBuilder.build();
   }
