@@ -8,13 +8,18 @@ import {
   Delete,
   ParseUUIDPipe,
   UseInterceptors,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { GetUsersQuery } from './users.types';
+import { BooleanPipe } from 'src/pipes/boolean.pipe';
 
 @Controller('users')
+@UseInterceptors(CacheInterceptor)
+@CacheTTL(60)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -24,15 +29,16 @@ export class UsersController {
   }
 
   @Get()
-  @UseInterceptors(CacheInterceptor)
-  @CacheTTL(60)
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query(BooleanPipe) usersQuery: GetUsersQuery) {
+    return this.usersService.findAll(usersQuery);
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.usersService.findOne(id);
+  findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Query(BooleanPipe) usersQuery: GetUsersQuery,
+  ) {
+    return this.usersService.findOne(id, usersQuery);
   }
 
   @Patch(':id')

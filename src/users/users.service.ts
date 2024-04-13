@@ -6,6 +6,9 @@ import { DataSource, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { GetUsersQuery } from './users.types';
+import { UserBuilder } from './users.builder';
+import { isEmptyObject } from 'src/utils/object';
 
 @Injectable()
 export class UsersService {
@@ -52,14 +55,24 @@ export class UsersService {
     }
   }
 
-  findAll() {
-    return this.usersRepository.find({
+  async findAll(usersQuery?: GetUsersQuery) {
+    const dbUsers = await this.usersRepository.find({
       take: 30,
+    });
+
+    return dbUsers.map((user) => {
+      return this.buildUser(user, usersQuery);
     });
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string, usersQuery?: GetUsersQuery) {
+    const dbUser = await this.usersRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    return this.buildUser(dbUser, usersQuery);
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {
@@ -70,5 +83,30 @@ export class UsersService {
 
   remove(id: string) {
     return `This action removes a #${id} user`;
+  }
+
+  private buildUser(user: User | null, usersQuery?: GetUsersQuery) {
+    if (!user) {
+      return null;
+    }
+
+    if (isEmptyObject(usersQuery)) {
+      return user;
+    }
+
+    const userBuilder = new UserBuilder();
+    if (usersQuery?.firstName) {
+      userBuilder.withFirstName(user.firstName);
+    }
+    if (usersQuery?.lastName) {
+      userBuilder.withLastName(user.lastName);
+    }
+    if (usersQuery?.email) {
+      userBuilder.withEmail(user.email);
+    }
+    if (usersQuery?.id) {
+      userBuilder.withId(user.id);
+    }
+    return userBuilder.build();
   }
 }
