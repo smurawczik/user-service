@@ -1,4 +1,4 @@
-import { Password } from 'src/password/entities/password.entity';
+import { Password } from 'src/resources/password/entities/password.entity';
 import {
   Column,
   Entity,

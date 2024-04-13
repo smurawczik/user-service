@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Password } from 'src/password/entities/password.entity';
-import { PasswordService } from 'src/password/password.service';
+import { Password } from 'src/resources/password/entities/password.entity';
+import { PasswordService } from 'src/resources/password/password.service';
 import { DataSource, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';

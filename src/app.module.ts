@@ -2,9 +2,9 @@ import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
+import { UsersModule } from './resources/users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PasswordModule } from './password/password.module';
+import { PasswordModule } from './resources/password/password.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ResponseTimeMiddleware } from './middlewares/response.time.middleware';
 
