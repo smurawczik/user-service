@@ -1,19 +1,25 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { ConfigService } from '@nestjs/config';
-import { seedFakeData } from './database/seed';
 import { ValidationPipe } from '@nestjs/common';
-import * as cookieParser from 'cookie-parser';
+import { ConfigService } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
 import * as compression from 'compression';
+import * as cookieParser from 'cookie-parser';
+import * as fs from 'fs';
 import helmet from 'helmet';
+import { AppModule } from './app.module';
+import { seedFakeData } from './database/seed';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    httpsOptions: {
+      key: fs.readFileSync('./certs/key.pem'),
+      cert: fs.readFileSync('./certs/cert.pem'),
+    },
+  });
 
   const configService = app.get(ConfigService);
 
   app.enableCors({
-    origin: `http://localhost:${configService.get<number>('AUTH_SERVICE_PORT') ?? 3000}`,
+    origin: `https://localhost:${configService.get<number>('AUTH_SERVICE_PORT') ?? 3000}`,
     credentials: true,
   });
   app.use(cookieParser());
