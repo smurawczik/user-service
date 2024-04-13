@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PasswordModule } from './resources/password/password.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ResponseTimeMiddleware } from './middlewares/response.time.middleware';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -14,9 +15,15 @@ import { ResponseTimeMiddleware } from './middlewares/response.time.middleware';
       isGlobal: true,
       cache: true,
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 1000,
+        limit: 200,
+      },
+    ]),
     CacheModule.register({
       isGlobal: true,
-      ttl: 1,
+      ttl: 500,
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
