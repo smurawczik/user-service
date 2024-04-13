@@ -4,7 +4,7 @@ import { Injectable, PipeTransform } from '@nestjs/common';
 
 @Injectable()
 export class BooleanPipe implements PipeTransform {
-  transform(value: any): boolean | Record<string, boolean> {
+  transform(value: any): boolean | Record<string, unknown> {
     // Convert string values to boolean
     if (typeof value === 'string') {
       return value === 'true'; // Adjust as needed based on your requirements
@@ -12,12 +12,15 @@ export class BooleanPipe implements PipeTransform {
     // if its an object map all its values to boolean
     if (typeof value === 'object') {
       return Object.keys(value).reduce<Record<string, boolean>>((acc, key) => {
+        const _value = value[key];
+        const _floatValue = parseFloat(_value);
+        const isNumberValue = !isNaN(_floatValue) && isFinite(_floatValue);
         // if its a string check if string is true indeed
-        if (typeof value[key] === 'string') {
-          acc[key] = value[key] === 'true';
+        if (typeof _value === 'string' && !isNumberValue) {
+          acc[key] = _value === 'true';
           return acc;
         } else {
-          acc[key] = Boolean(value[key]);
+          acc[key] = _value;
         }
         return acc;
       }, {});

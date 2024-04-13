@@ -9,6 +9,7 @@ import { User } from './entities/user.entity';
 import { GetUsersQuery } from './users.types';
 import { UserBuilder } from './users.builder';
 import { isEmptyObject } from 'src/utils/object';
+import { noop } from 'src/utils/noop';
 
 @Injectable()
 export class UsersService {
@@ -56,8 +57,12 @@ export class UsersService {
   }
 
   async findAll(usersQuery?: GetUsersQuery) {
+    const limit = usersQuery?.limit || 30;
+    const offset = usersQuery?.offset || 0;
+
     const dbUsers = await this.usersRepository.find({
-      take: 30,
+      take: limit,
+      skip: offset,
     });
 
     return dbUsers.map((user) => {
@@ -86,11 +91,14 @@ export class UsersService {
   }
 
   private buildUser(user: User | null, usersQuery?: GetUsersQuery) {
-    if (!user) {
+    if (!user || !usersQuery) {
       return null;
     }
 
-    if (isEmptyObject(usersQuery)) {
+    const { limit: _, offset: __, ...filteredQuery } = usersQuery;
+    noop(_, __);
+
+    if (isEmptyObject(filteredQuery)) {
       return user;
     }
 
