@@ -16,5 +16,5 @@ CMD ["npm", "run", "start:dev"]
 FROM base as prod   
 ENV NODE_ENV=production
 RUN yarn install --production
-COPY --from=build /orchestrator/dist ./
+COPY --from=build /dist ./
 CMD ["npm", "run", "start"]
