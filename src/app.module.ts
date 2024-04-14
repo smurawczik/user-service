@@ -27,7 +27,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
+      host: 'users-database',
       port: 3306,
       username: 'user',
       password: 'admin',
