@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './resources/users/users.module';
@@ -25,16 +25,20 @@ import { ThrottlerModule } from '@nestjs/throttler';
       isGlobal: true,
       ttl: 500,
     }),
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'users-database',
-      port: 3306,
-      username: 'user',
-      password: 'admin',
-      database: 'users',
-      autoLoadEntities: true,
-      synchronize: true,
-      dropSchema: true,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get('DATABASE_HOST') ?? 'localhost',
+        port: 3306,
+        username: 'user',
+        password: 'admin',
+        database: 'users',
+        autoLoadEntities: true,
+        synchronize: true,
+        dropSchema: true,
+      }),
     }),
     UsersModule,
     PasswordModule,
