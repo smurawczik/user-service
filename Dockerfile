@@ -1,5 +1,5 @@
 FROM node:20 as base
-WORKDIR /
+WORKDIR /user-service
 COPY package*.json ./
 COPY yarn*.json ./
 
@@ -16,5 +16,5 @@ CMD ["npm", "run", "start:dev"]
 FROM base as prod   
 ENV NODE_ENV=production
 RUN yarn install --production
-COPY --from=build /dist ./
+COPY --from=build /user-service/dist ./
 CMD ["npm", "run", "start"]
